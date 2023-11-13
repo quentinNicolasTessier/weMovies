@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+{% block title %}Hello sercheController!{% endblock %}
+{% block body %}
+    <div class="example-wrapper">
+        <div class="container">
+            <div class="movie-container">
+                <div class="page-header">
+                    <h3>Results for {{ search }}:</h3>
+                <a href="{{ path('app_home') }}">
+                    <button class="btn btn-danger">Back to home</button>
+                </a>
+                </div>
+                <div>
+                    {% if movies is not empty%}
+                        {% for movie in movies %}
+                            <div class="box-movie-container">
+                                <div class="box-movie-header">
+                                    <div class="movie-title">
+                                        <span>{{ movie.title }}</span>
+                                    </div>
+                                    <div class="movie-rating">
+                                        {% for i in 1..5 %}
+                                            {% if i > movie.rating/2 %}
+                                                <span class="fa fa-star"></span>
+                                            {% else %}
+                                                <span class="fa fa-star checked"></span>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span>(  {{ movie.voteNumber }} votes )</span>
+                                    </div>
+                                </div>
+                                <div class="movie-details">
+                                    <span>{{ movie.releaseDate|date('Y') }}</span>
+                                    {% for producer in movie.producers %}
+                                        <span>{{ producer.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="movie-description">
+                                    <p>
+                                        {{ movie.description|striptags|length > 200 ? movie.description|striptags|slice(0, 200) ~ '...' : movie.description|striptags }}
+                                    </p>
+                                </div>
+
+                                <div class="movie-footer" {{ stimulus_controller('modal-form') }}>
+
+                                    <button class="btn btn-primary" data-action="modal-form#openModal">Voir le detail</button>
+                                    {{ include('modal/_modal.html.twig',{
+                                        modalTitle: movie.title,
+                                        modalDescription: movie.description,
+                                        modalReleaseDate: movie.releaseDate
+                                    })
+
+                                    }}
+                                </div>
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+                        Aucun film de trouvé
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+{% endblock %}
