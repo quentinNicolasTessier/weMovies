@@ -11,7 +11,7 @@ class HomeControllerTest extends WebTestCase
      */
     public function responseTest(){
         $client=static::createClient();
-        $client->request('GET','/home');
+        $client->request('GET','/');
         $this->assertResponseIsSuccessful();
     }
     /**
@@ -29,7 +29,7 @@ class HomeControllerTest extends WebTestCase
      */
     public function getContentPageTest(){
         $client=static::createClient();
-        $client->request('GET','/home');
+        $client->request('GET','/');
         $this->assertSelectorTextContains('h1','Wemovies');
         $this->assertSelectorTextContains('div','Action');
     }
