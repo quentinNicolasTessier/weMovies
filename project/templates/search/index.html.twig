@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
-{% block title %}Hello sercheController!{% endblock %}
+{% block title %}WeMovie{% endblock %}
 {% block body %}
-    <div class="example-wrapper">
-        <div class="container">
-            <div class="movie-container">
+    <div class="body-container">
+        <div>
+            <div class="movie-container-search">
                 <div class="page-header">
                     <h3>Results for {{ search }}:</h3>
-                <a href="{{ path('app_home') }}">
-                    <button class="btn btn-danger">Back to home</button>
-                </a>
+                    <a href="{{ path('app_home') }}">
+                        <button class="btn btn-danger">Back to home</button>
+                    </a>
                 </div>
                 <div>
-                    {% if movies is not empty%}
+                    {% if movies is not empty %}
                         {% for movie in movies %}
                             <div class="box-movie-container">
                                 <div class="box-movie-header">
@@ -37,27 +37,31 @@
                                 </div>
                                 <div class="movie-description">
                                     <p>
-                                        {{ movie.description|striptags|length > 200 ? movie.description|striptags|slice(0, 200) ~ '...' : movie.description|striptags }}
+                                        {{ movie.description|length > 200 ? movie.description|slice(0, 200) ~ '...' : movie.description }}
                                     </p>
                                 </div>
 
                                 <div class="movie-footer" {{ stimulus_controller('modal-form') }}>
 
-                                    <button class="btn btn-primary" data-action="modal-form#openModal">Voir le detail</button>
+                                    <button class="btn btn-primary" id="{{ movie.id }}"
+                                            data-action="modal-form#openModal">Show details
+                                    </button>
                                     {{ include('modal/_modal.html.twig',{
+                                        modalId: movie.id,
+                                        modalProducers: movie.producers,
+                                        modalRating: movie.rating,
+                                        modalNbVote: movie.voteNumber,
                                         modalTitle: movie.title,
                                         modalDescription: movie.description,
                                         modalReleaseDate: movie.releaseDate
-                                    })
-
-                                    }}
+                                    }) }}
                                 </div>
                             </div>
 
                         {% endfor %}
 
                     {% else %}
-                        Aucun film de trouvé
+                        No movies found
                     {% endif %}
 
                 </div>

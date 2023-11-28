@@ -1,7 +1,0 @@
-{
-    "require": {
-        "twig/string-extra": "^3.7",
-        "twig/extra-bundle": "^3.7",
-        "symfony/stimulus-bundle": "^2.13"
-    }
-}

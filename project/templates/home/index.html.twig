@@ -1,112 +1,115 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
-{% block javascript %}
-
-{% endblock %}
+{% block title %}WeMovie{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <div class="page-header">
-    <h1 >Wemovies</h1>
-    {{ form_start(form,{'method': 'POST'}) }}
-        {{ form_errors(form.searchText) }}
-    {# {{ form_label(form.name) }} <-- just dont include this #}
-        {{ form_widget(form.searchText) }}
-        {{ form_widget(form.search, { 'attr' : { 'class': 'btn btn-primary' } }) }}
-    {{ form_end(form) }}
-    </div>
-    <iframe width="800" height="500" src="https://www.youtube.com/embed/mTdgIJHSGNc?si=H9pP4BxR9ohLhtZ-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-     <div class="container">
+    <div class="body-container">
+        <div class="page-header">
+            <a class="back-home-link" href="{{ path('app_home') }}"><h1>Wemovies</h1></a>
+            {{ form_start(form,{'method': 'POST'}) }}
+            {{ form_errors(form.searchText) }}
+            {{ form_widget(form.searchText, { 'attr' : { 'class': 'searchText' } }) }}
+            {{ form_widget(form.search, { 'attr' : { 'class': 'btn btn-primary' } }) }}
+            {{ form_end(form) }}
+        </div>
+        <iframe class="iframe-container" src="{{ trailerUrl }}"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+        <div class="movies-container">
 
-        <div class="genre-container">
-            <div>
-                {% for genre in genres.genres %}
-                    {% if idGenre is defined %}
-                        {% if genre.id == idGenre %}
-                            <div>{{ genre.name }} <input type="checkbox" id="{{ genre.id }}" name="{{ genre.name }}" checked="checked" onchange="test(this)"/></div>
+            <div class="genre-container">
+                <div class="genre-items">
+                    {% for genre in genreList.genres %}
+                        {% if currentGenre is defined %}
+                            {% if genre.id == currentGenre %}
+                                <div class="genre-item" {{ stimulus_controller('checkboxGenre') }}>
+                                    <input
+                                            type="checkbox" id="{{ genre.id }}" name="{{ genre.name }}"
+                                            checked="checked" data-action="checkboxGenre#redirection"/>
+                                    {{ genre.name }}
+                                </div>
+                            {% else %}
+                                <div class="genre-item" {{ stimulus_controller('checkboxGenre') }}>
+                                    <input
+                                            type="checkbox" id="{{ genre.id }}" name="{{ genre.name }}"
+                                            data-action="checkboxGenre#redirection"/>
+                                    {{ genre.name }}
+                                </div>
+                            {% endif %}
                         {% else %}
-                            <div>{{ genre.name }} <input type="checkbox" id="{{ genre.id }}" name="{{ genre.name }}"  onchange="test(this)"/></div>
+                            <div class="genre-item" {{ stimulus_controller('checkboxGenre') }}>
+                                <input
+                                        type="checkbox" id="{{ genre.id }}" name="{{ genre.name }}"
+                                        data-action="checkboxGenre#redirection"/>
+                                {{ genre.name }}
+                            </div>
                         {% endif %}
-                    {% else %}
-                        <div>{{ genre.name }} <input type="checkbox" id="{{ genre.id }}" name="{{ genre.name }}"  onchange="test(this)"/></div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-        <div class="movie-container">
-
-            <div>
-                {% if movies is not empty%}
-                    {% for movie in movies %}
-                        <div class="box-movie-container">
-                            <div class="box-movie-header">
-                                <div class="movie-title">
-                                    <span>{{ movie.title }}</span>
-                                </div>
-                                <div class="movie-rating">
-                                    {% for i in 1..5 %}
-                                        {% if i > movie.rating/2 %}
-                                            <span class="fa fa-star"></span>
-                                        {% else %}
-                                            <span class="fa fa-star checked"></span>
-                                        {% endif %}
-                                    {% endfor %}
-                                    <span>(  {{ movie.voteNumber }} votes )</span>
-                                </div>
-                            </div>
-                            <div class="movie-details">
-                                <span>{{ movie.releaseDate|date('Y') }}</span>
-                                {% for producer in movie.producers %}
-                                    <span>{{ producer.name }}</span>
-                                {% endfor %}
-                            </div>
-                            <div class="movie-description">
-                                <p>
-                                    {{ movie.description|striptags|length > 200 ? movie.description|striptags|slice(0, 200) ~ '...' : movie.description|striptags }}
-                                </p>
-                            </div>
-
-                            <div class="movie-footer" {{ stimulus_controller('modal-form') }}>
-
-                                    <button class="btn btn-primary" data-action="modal-form#openModal">Voir le detail</button>
-                                {{ include('modal/_modal.html.twig',{
-                                    modalTitle: movie.title,
-                                    modalDescription: movie.description,
-                                    modalReleaseDate: movie.releaseDate
-                                })
-
-                                }}
-                            </div>
-                        </div>
-
                     {% endfor %}
-
-                {% else %}
-                    Aucun film de trouvé
-                {% endif %}
-
+                </div>
             </div>
+            <div class="movie-container">
+
+                <div class={{ movies is empty ? "no-movies" : "" }}>
+                    {% if movies is not empty %}
+                        {% for movie in movies %}
+                            <div class="box-movie-container">
+                                <div class="box-movie-header">
+                                    <div class="movie-title">
+                                        <h3>{{ movie.title }}</h3>
+                                    </div>
+                                    <div class="movie-rating">
+                                        {% for i in 1..5 %}
+                                            {% if i > movie.rating/2 %}
+                                                <span class="fa fa-star"></span>
+                                            {% else %}
+                                                <span class="fa fa-star checked"></span>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span>(  {{ movie.voteNumber }} votes )</span>
+                                    </div>
+                                </div>
+                                <div class="movie-details">
+                                    <span>{{ movie.releaseDate|date('Y') }}</span>
+                                    {% for producer in movie.producers %}
+                                        <span>{{ producer.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="movie-description">
+                                    <p>
+                                        {{ movie.description|length > 200 ? movie.description|slice(0, 200) ~ '...' : movie.description }}
+                                    </p>
+                                </div>
+
+                                <div class="movie-footer" {{ stimulus_controller('modal-form') }}>
+
+                                    <button class="btn btn-primary" id="{{ movie.id }}"
+                                            data-action="modal-form#openModal">Show Detail
+                                    </button>
+                                    {{ include('modal/_modal.html.twig',{
+                                        modalId: movie.id,
+                                        modalProducers: movie.producers,
+                                        modalRating: movie.rating,
+                                        modalNbVote: movie.voteNumber,
+                                        modalTitle: movie.title,
+                                        modalDescription: movie.description,
+                                        modalReleaseDate: movie.releaseDate
+                                    }) }}
+                                </div>
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+                        No movies found
+                    {% endif %}
+
+                </div>
+            </div>
+
         </div>
+
 
     </div>
-
-
-</div>
-    <script>
-        function test(e){
-            if(e.checked ==true){
-                window.location.href="/genre/"+e.id;
-            }
-            else{
-                window.location.href="/";
-            }
-
-        }
-    </script>
 {% endblock %}

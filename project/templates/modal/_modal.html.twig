@@ -12,18 +12,26 @@
                         data-bs-dismiss="modal"
                         aria-label="Close"></button>
             </div>
+            <iframe class="iframe-container-modal" id="movie-{{ modalId }}"
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen></iframe>
             <div class="modal-body">
-                <div>
-                    {{ modalReleaseDate|date('Y') }}
+                <div class="modal-detail">
+                    Movie:
+                    {{ modalTitle }}
+                    <div class="modal-rating">
+                        {% for i in 1..5 %}
+                            {% if i > modalRating/2 %}
+                                <span class="fa fa-star"></span>
+                            {% else %}
+                                <span class="fa fa-star checked"></span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span>(  {{ modalNbVote }} votes )</span>
+
                 </div>
-                <div>
-                    {{ modalDescription }}
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Close
-                </button>
             </div>
         </div>
     </div>
